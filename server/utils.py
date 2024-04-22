@@ -439,6 +439,12 @@ def webui_address() -> str:
     port = WEBUI_SERVER["port"]
     return f"http://{host}:{port}"
 
+def client_address() -> str:
+    from configs.server_config import CLIENT_SERVER
+
+    host = CLIENT_SERVER["host"]
+    port = CLIENT_SERVER["port"]
+    return f"http://{host}:{port}"
 
 def get_prompt_template(type: str, name: str) -> Optional[str]:
     '''

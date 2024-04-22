@@ -1,0 +1,12 @@
+[Unit]
+Description=Run langchain service at Startup
+After=network.target
+
+[Service]
+ExecStart=/home/ys/langchain-start.sh
+User=root
+Group=root
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

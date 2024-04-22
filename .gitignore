@@ -177,4 +177,5 @@ cython_debug/
 test.py
 configs/*.py
 
-
+chatglm2-6b-int4/
+Qwen-1_8B-Chat/

@@ -27,8 +27,9 @@ from configs import (
     FSCHAT_CONTROLLER,
     FSCHAT_OPENAI_API,
     FSCHAT_MODEL_WORKERS,
-    API_SERVER,
+    CLIENT_SERVER,
     WEBUI_SERVER,
+    API_SERVER,
     HTTPX_DEFAULT_TIMEOUT,
 )
 from server.utils import (fschat_controller_address, fschat_model_worker_address,
@@ -469,6 +470,30 @@ def run_webui(started_event: mp.Event = None, run_mode: str = None):
     p.wait()
 
 
+def run_client(started_event: mp.Event = None, run_mode: str = None):
+    from server.utils import set_httpx_config
+    set_httpx_config()
+
+    host = CLIENT_SERVER["host"]
+    port = CLIENT_SERVER["port"]
+
+    cmd = ["streamlit", "run", "client.py",
+           "--server.address", host,
+           "--server.port", str(port),
+           "--theme.base", "light",
+           "--theme.primaryColor", "#165dff",
+           "--theme.secondaryBackgroundColor", "#f5f5f5",
+           "--theme.textColor", "#000000",
+           ]
+    if run_mode == "lite":
+        cmd += [
+            "--",
+            "lite",
+        ]
+    p = subprocess.Popen(cmd)
+    started_event.set()
+    p.wait()
+
 def parse_args() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -564,7 +589,7 @@ def dump_server_info(after_start=False, args=None):
     import platform
     import langchain
     import fastchat
-    from server.utils import api_address, webui_address
+    from server.utils import api_address, webui_address, client_address
 
     print("\n")
     print("=" * 30 + "Langchain-Chatchat Configuration" + "=" * 30)
@@ -594,6 +619,8 @@ def dump_server_info(after_start=False, args=None):
             print(f"    Chatchat  API  Server: {api_address()}")
         if args.webui:
             print(f"    Chatchat WEBUI Server: {webui_address()}")
+        if args.client:
+            print(f"    Chatchat CLIENT Server: {client_address()}")
     print("=" * 30 + "Langchain-Chatchat Configuration" + "=" * 30)
     print("\n")
 
@@ -630,6 +657,7 @@ async def start_main_server():
         args.api = True
         args.api_worker = True
         args.webui = True
+        args.client = True
 
     elif args.all_api:
         args.openai_api = True
@@ -637,6 +665,7 @@ async def start_main_server():
         args.api = True
         args.api_worker = True
         args.webui = False
+        args.client = False
 
     elif args.llm_api:
         args.openai_api = True
@@ -644,6 +673,7 @@ async def start_main_server():
         args.api_worker = True
         args.api = False
         args.webui = False
+        args.client = False
 
     if args.lite:
         args.model_worker = False
@@ -741,6 +771,16 @@ async def start_main_server():
         )
         processes["webui"] = process
 
+    client_started = manager.Event()
+    if args.client:
+        process = Process(
+            target=run_client,
+            name=f"CLIENT Server",
+            kwargs=dict(started_event=client_started, run_mode=run_mode),
+            daemon=True,
+        )
+        processes["client"] = process
+
     if process_count() == 0:
         parser.print_help()
     else:
@@ -775,6 +815,11 @@ async def start_main_server():
                 p.start()
                 p.name = f"{p.name} ({p.pid})"
                 webui_started.wait()
+
+            if p := processes.get("client"):
+                p.start()
+                p.name = f"{p.name} ({p.pid})"
+                client_started.wait()
 
             dump_server_info(after_start=True, args=args)
 
