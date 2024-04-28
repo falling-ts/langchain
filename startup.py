@@ -496,6 +496,7 @@ def run_client(started_event: mp.Event = None, run_mode: str = None):
 
 def parse_args() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
+
     parser.add_argument(
         "-a",
         "--all-webui",
@@ -566,6 +567,12 @@ def parse_args() -> argparse.ArgumentParser:
         action="store_true",
         help="run webui.py server",
         dest="webui",
+    )
+    parser.add_argument(
+        "--client",
+        action="store_true",
+        help="run client.py server",
+        dest="client",
     )
     parser.add_argument(
         "-q",

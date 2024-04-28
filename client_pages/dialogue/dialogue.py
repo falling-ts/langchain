@@ -103,10 +103,10 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
     default_model = api.get_default_llm_model()[0]
 
     if not chat_box.chat_inited:
-        st.toast(
-            f"欢迎使用 [`Langchain-Chatchat`](https://github.com/chatchat-space/Langchain-Chatchat) ! \n\n"
-            f"当前运行的模型`{default_model}`, 您可以开始提问了."
-        )
+        # st.toast(
+        #     f"欢迎使用 数字日照智能聊天系统 ! \n\n"
+        #     f"当前运行的模型`{default_model}`, 您可以开始提问了."
+        # )
         chat_box.init_session()
 
     # 弹出自定义命令帮助信息
@@ -122,7 +122,8 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
         index = 0
         if st.session_state.get("cur_conv_name") in conv_names:
             index = conv_names.index(st.session_state.get("cur_conv_name"))
-        conversation_name = st.selectbox("当前会话：", conv_names, index=index)
+        # conversation_name = st.selectbox("当前会话：", conv_names, index=index)
+        conversation_name = conv_names[index]
         chat_box.use_chat_name(conversation_name)
         conversation_id = st.session_state["conversation_ids"][conversation_name]
 
@@ -146,6 +147,7 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                                      index=0,
                                      on_change=on_mode_change,
                                      key="dialogue_mode",
+                                     label_visibility="collapsed"
                                      )
 
         def on_llm_change():
@@ -183,6 +185,7 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
                                  format_func=llm_model_format_func,
                                  on_change=on_llm_change,
                                  key="llm_model",
+                                 label_visibility="collapsed",
                                  )
         if (st.session_state.get("prev_llm_model") != llm_model
                 and not is_lite
@@ -214,16 +217,18 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
             text = f"已切换为 {prompt_template_name} 模板。"
             st.toast(text)
 
-        prompt_template_select = st.selectbox(
-            "请选择Prompt模板：",
-            prompt_templates_kb_list,
-            index=0,
-            on_change=prompt_change,
-            key="prompt_template_select",
-        )
+        # st.selectbox(
+        #     "请选择Prompt模板：",
+        #     prompt_templates_kb_list,
+        #     index=0,
+        #     on_change=prompt_change,
+        #     key="prompt_template_select"
+        # )
         prompt_template_name = st.session_state.prompt_template_select
-        temperature = st.slider("Temperature：", 0.0, 2.0, TEMPERATURE, 0.05)
-        history_len = st.number_input("历史对话轮数：", 0, 20, HISTORY_LEN)
+        # temperature = st.slider("Temperature：", 0.0, 2.0, TEMPERATURE, 0.05)
+        temperature = TEMPERATURE
+        # history_len = st.number_input("历史对话轮数：", 0, 20, HISTORY_LEN)
+        history_len = HISTORY_LEN
 
         def on_kb_change():
             st.toast(f"已加载知识库： {st.session_state.selected_kb}")
@@ -440,17 +445,14 @@ def dialogue_page(api: ApiRequest, is_lite: bool = False):
 
         cols = st.columns(2)
         export_btn = cols[0]
-        if cols[1].button(
-                "清空对话",
-                use_container_width=True,
-        ):
-            chat_box.reset_history()
-            st.rerun()
+        # if cols[1].button("清空对话", use_container_width=True):
+        #     chat_box.reset_history()
+        #     st.rerun()
 
-    export_btn.download_button(
-        "导出记录",
-        "".join(chat_box.export2md()),
-        file_name=f"{now:%Y-%m-%d %H.%M}_对话记录.md",
-        mime="text/markdown",
-        use_container_width=True,
-    )
+    # export_btn.download_button(
+    #     "导出记录",
+    #     "".join(chat_box.export2md()),
+    #     file_name=f"{now:%Y-%m-%d %H.%M}_对话记录.md",
+    #     mime="text/markdown",
+    #     use_container_width=True
+    # )

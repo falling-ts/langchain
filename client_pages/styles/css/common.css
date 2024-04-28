@@ -1,0 +1,31 @@
+section[data-testid="stSidebar"] {
+    position: fixed !important;
+    width: 100% !important;
+    height: fit-content !important;
+    max-width: 100%;
+}
+
+div[data-testid="stSidebarContent"] > div:first-child {
+    display: none;
+}
+
+div[data-testid="stSidebarUserContent"] {
+    padding: 0.5rem 0.8rem;
+}
+
+section[data-testid="stSidebar"] div[data-testid="stVerticalBlock"] {
+    flex-direction: row;
+    width: 100%;
+}
+
+section[data-testid="stSidebar"] div[data-testid="stVerticalBlock"] div,
+section[data-testid="stSidebar"] div[data-testid="stVerticalBlock"] iframe {
+    width: auto !important;
+}
+
+section[data-testid="stSidebar"] div[data-testid="stVerticalBlock"] > div {
+    display: flex;
+    align-items: center;
+}
+
+

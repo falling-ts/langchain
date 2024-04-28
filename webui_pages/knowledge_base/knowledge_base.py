@@ -308,10 +308,7 @@ def knowledge_base_page(api: ApiRequest, is_lite: bool = None):
                         empty.progress(d["finished"] / d["total"], d["msg"])
                 st.rerun()
 
-        if cols[2].button(
-                "删除知识库",
-                use_container_width=True,
-        ):
+        if cols[2].button("删除知识库", use_container_width=True):
             ret = api.delete_knowledge_base(kb)
             st.toast(ret.get("msg", " "))
             time.sleep(1)
